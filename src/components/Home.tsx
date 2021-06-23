@@ -47,6 +47,8 @@ function calculateStatistics(deliveryData: OrderDeliveryDate[]) {
   }
 }
 
+const COOKIE_CODE = "document.cookie.split('; ').find((x) => x.startsWith('token=')).split('=')[1]";
+
 export function Home() {
 
   const [token, setToken] = useState('');
@@ -89,6 +91,16 @@ export function Home() {
       <div className="container text-center">
         <div className="text-4xl font-bold mt-2">
           View your order history
+        </div>
+
+        <div className="bg-blue-100 bg-opacity-10 mt-5 p-4 ring-2 rounded text-left">
+          <p className="font-bold">How to use?</p>
+          <p>An access token is required to fetch your Evaly orders. The easiest way to get it is as follows</p>
+          <ol className="list-decimal list-inside">
+            <li>Login at evaly.com.bd</li>
+            <li>Open console panel and paste the following, <pre className="bg-purple-100 inline-block py-2 px-4 rounded">{COOKIE_CODE}</pre></li>
+            <li>Copy the output and paste in the below input box</li>
+          </ol>
         </div>
 
         <div className="mt-10">
