@@ -8,6 +8,7 @@ import { fetchAllOrderDetail, fetchAllOrders } from "./api";
 import { OrderStatusChart } from "./OrderStatusChart";
 import { Badge } from "./Badge";
 import { PendingOrders } from "./PendingOrders";
+import copy from 'copy-to-clipboard';
 
 function prepareOrderDeliveryData(orderDetail: OrderDetail[]): OrderDeliveryDate[] {
   const onlyDelivered = orderDetail.filter((order) => order.order_status === 'delivered');
@@ -111,12 +112,17 @@ export function Home() {
     })
   }, [orders]);
 
+  const copyCommandToClipboard = () => {
+    copy(COOKIE_CODE);
+    notify({message: 'Code copied to clipboard', 'status': 'success'});
+  }
+
   console.log('deliver', orderDetails);
   console.log('deliver', orderDeliveryData);
 
   return (
-    <div className="mx-32 pb-4">
-      <div className="container text-center">
+    <div className="pb-4">
+      <div className="container mx-auto px-4 text-center">
         <div className="text-4xl font-bold mt-2">
           View your order history
         </div>
@@ -126,10 +132,19 @@ export function Home() {
           <p>An access token is required to fetch your Evaly orders. The easiest way to get it is as follows</p>
           <ol className="list-decimal list-inside">
             <li>Login at evaly.com.bd</li>
-            <li>Open console panel and paste the following, <pre className="bg-purple-100 inline-block py-2 px-4 rounded">{COOKIE_CODE}</pre></li>
+            <li>Open console panel and paste the following (click to copy), <br />
+              <p onClick={copyCommandToClipboard} className="bg-purple-100 inline-block py-2 px-4 rounded font-mono">{COOKIE_CODE}</p>
+            </li>
             <li>Copy the output and paste in the below input box</li>
           </ol>
         </div>
+
+        <div className="bg-yellow-100 mt-5 p-4 ring-2 rounded text-left ring-yellow-300">
+          <p className="font-bold">Warning</p>
+          <p> Access token is sensitive information. Do not share it with anyone. This web app requires the access token as I have not found any other way of fetching order data without the access token.</p>
+          <p> This web app runs entirely on your browser. The only external service being used is a proxy server. It is required to bypass the CORS policy. </p>
+        </div>
+
 
         <div className="mt-10">
           <input className="border-2 p-2 rounded w-2/4 border-blue-300" placeholder="Paste token" type="text" value={token} onChange={e => setToken(e.target.value)}></input>
