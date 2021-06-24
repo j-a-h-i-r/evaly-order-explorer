@@ -1,14 +1,15 @@
 import { useEffect, useState } from "react";
 import dayjs from 'dayjs';
 import NotificationsSystem, { atalhoTheme, useNotifications } from 'reapop';
+import copy from 'copy-to-clipboard';
 import { OrderTimelineChart } from "./OrderTimeline";
 import { Order, OrderDeliveryDate, OrderDetail } from "./interface";
-import { ORDER_DATA, ORDER_DETAIL_DATA } from './data';
 import { fetchAllOrderDetail, fetchAllOrders } from "./api";
 import { OrderStatusChart } from "./OrderStatusChart";
 import { Badge } from "./Badge";
+import githubLogo from './github.svg'
+import { ORDER_DATA, ORDER_DETAIL_DATA } from './data';
 import { PendingOrders } from "./PendingOrders";
-import copy from 'copy-to-clipboard';
 
 function prepareOrderDeliveryData(orderDetail: OrderDetail[]): OrderDeliveryDate[] {
   const onlyDelivered = orderDetail.filter((order) => order.order_status === 'delivered');
@@ -97,7 +98,7 @@ export function Home() {
 
     fetchAllOrderDetail(token, orders)
     .then((orderDetails) => {
-      console.log('details', orderDetails);
+      // console.log('details', orderDetails);
       setOrderDetails(orderDetails);
       dismissNotification('order-detail-loading');
       notify({message: 'Order detail fetch complete.', status: 'success'})
@@ -123,8 +124,15 @@ export function Home() {
   return (
     <div className="pb-4">
       <div className="container mx-auto px-4 text-center">
-        <div className="text-4xl font-bold mt-2">
-          View your order history
+        <div className="relative">
+          <p className="text-4xl font-bold ">
+            View your order history
+          </p>
+          <div className="absolute top-1 right-0">
+            <a href="https://github.com/j-a-h-i-r/evaly-order-explorer" className="ml-auto" target="_blank" rel="noreferrer">
+              <img src={githubLogo} width={32} alt="GitHub repository Url" className="ml-auto"></img>
+            </a>
+          </div>
         </div>
 
         <div className="bg-blue-100 bg-opacity-10 mt-5 p-4 ring-2 rounded text-left">
