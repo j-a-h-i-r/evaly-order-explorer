@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import dayjs from 'dayjs';
+import NotificationsSystem, { atalhoTheme, useNotifications } from 'reapop';
 import { OrderTimelineChart } from "./OrderTimeline";
 import { Order, OrderDeliveryDate, OrderDetail } from "./interface";
 import { ORDER_DATA, ORDER_DETAIL_DATA } from './data';
@@ -57,29 +58,56 @@ export function Home() {
   const [orderDeliveryData, setOrderDeliveryData]: [OrderDeliveryDate[], Function] = useState([]);
   const [stats, setStats]: [any, Function] = useState([]);
 
+  const { notify, notifications, dismissNotification } = useNotifications();
+
   const fetchButtonClicked = () => {
     console.log(token);
-
     if (!token) return;
+
+    notify({
+      message: 'Fetching order status. Wait a while',
+      status: 'loading',
+      id: 'order-loading',
+      dismissAfter: 0,
+    });
 
     fetchAllOrders(token)
     .then((orders) => {
       console.log(orders);
       setOrders(orders);
+      dismissNotification('order-loading');
+      notify({message: 'Order status fetch complete', status: 'success'})
     })
-    .catch(err => console.log(err))
+    .catch((err) => {
+      console.log(err)
+      notify({message: 'Error while fetching order status', status: 'error'})
+    })
   }
 
   useEffect(() => {
     if (!token) return;
+
+    notify({
+      message: 'Fetching order detail data. Wait a while',
+      status: 'loading',
+      id: 'order-detail-loading',
+      dismissAfter: 0,
+    })
+
     fetchAllOrderDetail(token, orders)
     .then((orderDetails) => {
       console.log('details', orderDetails);
       setOrderDetails(orderDetails);
+      dismissNotification('order-detail-loading');
+      notify({message: 'Order detail fetch complete.', status: 'success'})
 
       const orderDeliveryData = prepareOrderDeliveryData(orderDetails);
       setOrderDeliveryData(orderDeliveryData);
       setStats(calculateStatistics(orderDeliveryData));
+    })
+    .catch((err) => {
+      console.error(err);
+      notify({message: 'Error while fetching order details', status: 'error'});
     })
   }, [orders]);
 
@@ -139,6 +167,8 @@ export function Home() {
           </div>
         </div>
       </div>
+
+      <NotificationsSystem theme={atalhoTheme} notifications={notifications} dismissNotification={(id) => dismissNotification(id)} />
     </div>
   )
 }
