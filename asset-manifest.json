@@ -1,22 +1,23 @@
 {
   "files": {
-    "main.css": "/evaly-order-explorer/static/css/main.191e6bce.chunk.css",
-    "main.js": "/evaly-order-explorer/static/js/main.35435591.chunk.js",
-    "main.js.map": "/evaly-order-explorer/static/js/main.35435591.chunk.js.map",
-    "runtime-main.js": "/evaly-order-explorer/static/js/runtime-main.273efb1d.js",
-    "runtime-main.js.map": "/evaly-order-explorer/static/js/runtime-main.273efb1d.js.map",
-    "static/js/2.8c8ed456.chunk.js": "/evaly-order-explorer/static/js/2.8c8ed456.chunk.js",
-    "static/js/2.8c8ed456.chunk.js.map": "/evaly-order-explorer/static/js/2.8c8ed456.chunk.js.map",
-    "static/js/3.2a6c886f.chunk.js": "/evaly-order-explorer/static/js/3.2a6c886f.chunk.js",
-    "static/js/3.2a6c886f.chunk.js.map": "/evaly-order-explorer/static/js/3.2a6c886f.chunk.js.map",
+    "main.css": "/evaly-order-explorer/static/css/main.ca0ab338.chunk.css",
+    "main.js": "/evaly-order-explorer/static/js/main.7e653f80.chunk.js",
+    "main.js.map": "/evaly-order-explorer/static/js/main.7e653f80.chunk.js.map",
+    "runtime-main.js": "/evaly-order-explorer/static/js/runtime-main.4ca9c53f.js",
+    "runtime-main.js.map": "/evaly-order-explorer/static/js/runtime-main.4ca9c53f.js.map",
+    "static/js/2.69078798.chunk.js": "/evaly-order-explorer/static/js/2.69078798.chunk.js",
+    "static/js/2.69078798.chunk.js.map": "/evaly-order-explorer/static/js/2.69078798.chunk.js.map",
+    "static/js/3.c2d23236.chunk.js": "/evaly-order-explorer/static/js/3.c2d23236.chunk.js",
+    "static/js/3.c2d23236.chunk.js.map": "/evaly-order-explorer/static/js/3.c2d23236.chunk.js.map",
     "index.html": "/evaly-order-explorer/index.html",
-    "static/css/main.191e6bce.chunk.css.map": "/evaly-order-explorer/static/css/main.191e6bce.chunk.css.map",
-    "static/js/2.8c8ed456.chunk.js.LICENSE.txt": "/evaly-order-explorer/static/js/2.8c8ed456.chunk.js.LICENSE.txt"
+    "static/css/main.ca0ab338.chunk.css.map": "/evaly-order-explorer/static/css/main.ca0ab338.chunk.css.map",
+    "static/js/2.69078798.chunk.js.LICENSE.txt": "/evaly-order-explorer/static/js/2.69078798.chunk.js.LICENSE.txt",
+    "static/media/github.3b21c250.svg": "/evaly-order-explorer/static/media/github.3b21c250.svg"
   },
   "entrypoints": [
-    "static/js/runtime-main.273efb1d.js",
-    "static/js/2.8c8ed456.chunk.js",
-    "static/css/main.191e6bce.chunk.css",
-    "static/js/main.35435591.chunk.js"
+    "static/js/runtime-main.4ca9c53f.js",
+    "static/js/2.69078798.chunk.js",
+    "static/css/main.ca0ab338.chunk.css",
+    "static/js/main.7e653f80.chunk.js"
   ]
 }
