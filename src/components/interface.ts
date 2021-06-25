@@ -47,3 +47,9 @@ export interface OrderApiResponse {
   previous: string,
   results: Order[],
 }
+
+export interface OrderSummaryStats {
+  average: number,
+  minimum: number,
+  maximum: number,
+}

@@ -3,7 +3,7 @@ import dayjs from 'dayjs';
 import NotificationsSystem, { atalhoTheme, useNotifications } from 'reapop';
 import copy from 'copy-to-clipboard';
 import { OrderTimelineChart } from "./OrderTimeline";
-import { Order, OrderDeliveryDate, OrderDetail } from "./interface";
+import { Order, OrderDeliveryDate, OrderDetail, OrderSummaryStats } from "./interface";
 import { fetchAllOrderDetail, fetchAllOrders } from "./api";
 import { OrderStatusChart } from "./OrderStatusChart";
 import { Badge } from "./Badge";
@@ -27,7 +27,7 @@ function prepareOrderDeliveryData(orderDetail: OrderDetail[]): OrderDeliveryDate
   return deliveryData;
 }
 
-function calculateStatistics(deliveryData: OrderDeliveryDate[]) {
+function calculateStatistics(deliveryData: OrderDeliveryDate[]): OrderSummaryStats {
   function cmp(a: OrderDeliveryDate, b: OrderDeliveryDate): number {
     return a.orderDate - b.orderDate;
   }
@@ -54,11 +54,11 @@ const COOKIE_CODE = "document.cookie.split('; ').find((x) => x.startsWith('token
 
 export function Home() {
 
-  const [token, setToken] = useState('');
-  const [orders, setOrders]: [ Order[], Function ] = useState([]);
-  const [orderDetails, setOrderDetails]: [ OrderDetail[], Function ] = useState([]);
-  const [orderDeliveryData, setOrderDeliveryData]: [OrderDeliveryDate[], Function] = useState([]);
-  const [stats, setStats]: [any, Function] = useState([]);
+  const [token, setToken] = useState<string>('');
+  const [orders, setOrders] = useState<Order[]>([]);
+  const [orderDetails, setOrderDetails] = useState<OrderDetail[]>(ORDER_DETAIL_DATA);
+  const [orderDeliveryData, setOrderDeliveryData] = useState<OrderDeliveryDate[]>(prepareOrderDeliveryData(ORDER_DETAIL_DATA));
+  const [stats, setStats] = useState<OrderSummaryStats>();
 
   const { notify, notifications, dismissNotification } = useNotifications();
 
@@ -76,7 +76,7 @@ export function Home() {
     fetchAllOrders(token)
     .then((orders) => {
       console.log(orders);
-      setOrders(orders);
+      setOrders(orders)
       dismissNotification('order-loading');
       notify({message: 'Order status fetch complete', status: 'success'})
     })
@@ -175,7 +175,7 @@ export function Home() {
 
             {/* <PendingOrders orderDetails={orderDetails} /> */}
 
-            <OrderTimelineChart orderDeliveryDates={orderDeliveryData} />
+            <OrderTimelineChart orders={orderDetails} />
 
             <p className="bg-blue-50 font-semibold inline-block px-6 py-2 rounded-full text-left">
               You have total <span className="bg-blue-300 font-bold px-2 rounded-full">{orders.length}</span> orders.
@@ -183,9 +183,9 @@ export function Home() {
             </p>
 
             <div className="flex justify-evenly mt-5">
-              <Badge header="Minimum" content={stats.minimum} />
-              <Badge header="Average" content={stats.average} />
-              <Badge header="Maximum" content={stats.maximum} />
+              <Badge header="Minimum" content={stats?.minimum} />
+              <Badge header="Average" content={stats?.average} />
+              <Badge header="Maximum" content={stats?.maximum} />
             </div>
           </div>
         </div>
