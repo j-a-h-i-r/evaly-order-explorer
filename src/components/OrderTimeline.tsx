@@ -1,15 +1,14 @@
 import { ApexOptions } from 'apexcharts';
 import dayjs from 'dayjs';
 import ReactApexChart from 'react-apexcharts';
-import { Order, OrderDeliveryDate, OrderDetail, OrderHistory, OrderStatus } from './interface';
+import { OrderDetail, OrderHistory, OrderStatus } from './interface';
 
-type InnerSeriesValue = [number, number];
 interface StatusDuration { order_status: OrderStatus, from: string, to: string }
 type OrderHistoryWithInvoice = StatusDuration & { invoice_no: string };
-type OrderWithTimeline = Omit<OrderDetail, 'histories'> & {histories: StatusDuration[]}
+type OrderWithTimeline = Omit<OrderDetail, 'histories'> & { histories: StatusDuration[] }
 
 function prepareInnerSeries(histories: OrderHistoryWithInvoice[]) {
-  const invoices: {[key: string]: StatusDuration} = {};
+  const invoices: { [key: string]: StatusDuration } = {};
 
   histories.forEach((history) => {
     invoices[history.invoice_no] = history;
@@ -26,43 +25,52 @@ function prepareInnerSeries(histories: OrderHistoryWithInvoice[]) {
   return series;
 }
 
+function calculateStatusDuration(orderHistory: OrderHistory[]) {
+  const marked: {[key: string]: boolean} = {};
+  const duplicatesRemoved = orderHistory.filter((order) => {
+    if (marked[order.order_status]) return false;
+    marked[order.order_status] = true;
+    return true;
+  })
+  const historiesSorted = duplicatesRemoved.sort((a, b) => dayjs(a.date).diff(b.date));
+  const statusDuration: StatusDuration[] = [];
+  for (let i = 0; i < historiesSorted.length - 1; i++) {
+    statusDuration.push({
+      from: historiesSorted[i].date,
+      to: historiesSorted[i + 1].date,
+      order_status: historiesSorted[i].order_status,
+    })
+  }
+  return statusDuration;
+}
+
 function prepareSeries(orders: OrderDetail[]) {
   const deliveredOrders = orders.filter((order) => order.order_status === 'delivered');
-  const combinedHistories: OrderHistoryWithInvoice[] = [];
 
   const formattedOrders: OrderWithTimeline[] = deliveredOrders.map((order) => {
     const { histories } = order;
-    const historiesSorted = histories.sort((a, b) => dayjs(a.date).diff(b.date));
-    const formattedHistories: StatusDuration[] = [];
-    for (let i=0; i<historiesSorted.length-1; i++) {
-      formattedHistories.push({
-        from: historiesSorted[i].date,
-        to: historiesSorted[i+1].date,
-        order_status: historiesSorted[i].order_status,
-      })
-    }
+    const statusDuration = calculateStatusDuration(histories);
     return {
       ...order,
-      histories: formattedHistories,
+      histories: statusDuration,
     };
   })
 
+  const combinedStatusHistories: OrderHistoryWithInvoice[] = [];
   formattedOrders.forEach((order) => {
     const { invoice_no, histories } = order;
     histories.forEach((history) => {
-      combinedHistories.push({
+      combinedStatusHistories.push({
         ...history,
         invoice_no,
       })
     })
   })
 
-  console.log(combinedHistories);
-
   const orderStatus: OrderStatus[] = ['pending', 'confirmed', 'processing', 'picked', 'shipped', 'delivered'];
   const series: any = [];
   orderStatus.forEach((status) => {
-    const filteredHistories = combinedHistories.filter((history) => history.order_status === status)
+    const filteredHistories = combinedStatusHistories.filter((history) => history.order_status === status)
     const inner = prepareInnerSeries(filteredHistories);
     if (inner.length > 0) {
       series.push({
@@ -71,7 +79,6 @@ function prepareSeries(orders: OrderDetail[]) {
       })
     }
   })
-  console.log("all", series);
   return series;
 }
 
@@ -92,7 +99,6 @@ const options: ApexOptions = {
   plotOptions: {
     bar: {
       horizontal: true,
-      distributed: true,
       dataLabels: {
         hideOverflowingLabels: false,
         position: 'top',
@@ -145,8 +151,6 @@ const options: ApexOptions = {
 
 export function OrderTimelineChart({ orders }: { orders: OrderDetail[] }) {
   const series = prepareSeries(orders);
-
-  console.log("Series", series);
 
   return (
     <ReactApexChart series={series} options={options} type="rangeBar">

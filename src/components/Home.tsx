@@ -3,13 +3,14 @@ import dayjs from 'dayjs';
 import NotificationsSystem, { atalhoTheme, useNotifications } from 'reapop';
 import copy from 'copy-to-clipboard';
 import { OrderTimelineChart } from "./OrderTimeline";
-import { Order, OrderDeliveryDate, OrderDetail, OrderSummaryStats } from "./interface";
+import { Order, OrderDeliveryDate, OrderDetail, OrderStatus, OrderSummaryStats } from "./interface";
 import { fetchAllOrderDetail, fetchAllOrders } from "./api";
 import { OrderStatusChart } from "./OrderStatusChart";
 import { Badge } from "./Badge";
 import githubLogo from './github.svg'
 import { ORDER_DATA, ORDER_DETAIL_DATA } from './data';
 import { PendingOrders } from "./PendingOrders";
+import { OrderStatusComponent } from "./OrderStatus";
 
 function prepareOrderDeliveryData(orderDetail: OrderDetail[]): OrderDeliveryDate[] {
   const onlyDelivered = orderDetail.filter((order) => order.order_status === 'delivered');
@@ -27,29 +28,6 @@ function prepareOrderDeliveryData(orderDetail: OrderDetail[]): OrderDeliveryDate
   return deliveryData;
 }
 
-function calculateStatistics(deliveryData: OrderDeliveryDate[]): OrderSummaryStats {
-  function cmp(a: OrderDeliveryDate, b: OrderDeliveryDate): number {
-    return a.orderDate - b.orderDate;
-  }
-
-  const sorted = [...deliveryData].sort(cmp);
-  const timeInDays = sorted.map((data) => {
-    const {orderDate: order, deliveryDate: deliver} = data;
-    return dayjs(deliver).diff(order, 'd');
-  })
-  const daysSorted = [...timeInDays].sort((a,b ) => (a-b));
- 
-  const average = daysSorted.reduce((acc, cur) => acc + cur, 0) / daysSorted.length;
-  const minimum = daysSorted[0];
-  const maximum = daysSorted[daysSorted.length - 1];
-  const averageRounded = Math.round(average * 100) / 100;
-  return {
-    average: averageRounded,
-    minimum,
-    maximum,
-  }
-}
-
 const COOKIE_CODE = "document.cookie.split('; ').find((x) => x.startsWith('token=')).split('=')[1]";
 
 export function Home() {
@@ -58,7 +36,6 @@ export function Home() {
   const [orders, setOrders] = useState<Order[]>([]);
   const [orderDetails, setOrderDetails] = useState<OrderDetail[]>(ORDER_DETAIL_DATA);
   const [orderDeliveryData, setOrderDeliveryData] = useState<OrderDeliveryDate[]>(prepareOrderDeliveryData(ORDER_DETAIL_DATA));
-  const [stats, setStats] = useState<OrderSummaryStats>();
 
   const { notify, notifications, dismissNotification } = useNotifications();
 
@@ -105,7 +82,6 @@ export function Home() {
 
       const orderDeliveryData = prepareOrderDeliveryData(orderDetails);
       setOrderDeliveryData(orderDeliveryData);
-      setStats(calculateStatistics(orderDeliveryData));
     })
     .catch((err) => {
       console.error(err);
@@ -182,11 +158,8 @@ export function Home() {
                 Out of these, <span className="bg-blue-300 font-bold px-2 rounded-full">{orderDeliveryData.length}</span> has been delivered.
             </p>
 
-            <div className="flex justify-evenly mt-5">
-              <Badge header="Minimum" content={stats?.minimum} />
-              <Badge header="Average" content={stats?.average} />
-              <Badge header="Maximum" content={stats?.maximum} />
-            </div>
+            <OrderStatusComponent orderDeliveryData={orderDeliveryData} />
+
           </div>
         </div>
       </div>
